@@ -1,7 +1,5 @@
 console.log('chatbot.js loaded');
-// 1. Get the user input
-// 2. display the user input
-// 3. fetch the GPT assistant response and show it in chatbox
+
 
 const button = document.getElementById('send-btn')
                .addEventListener('click', function(){
@@ -10,7 +8,7 @@ const button = document.getElementById('send-btn')
 
     const input = document.getElementById('chat-input')
     const message= input.value.trim()
-    console.log(message)
+    
 
 
     // Display the user input
@@ -18,7 +16,8 @@ const button = document.getElementById('send-btn')
         displayMessage(message, 'user')
 
         // Fetch the GPT assistant response
-        const response = fetchRespone(message)
+        fetchRespone(message)
+        input.value = ''
 
 
     }
@@ -26,23 +25,55 @@ const button = document.getElementById('send-btn')
 
     function displayMessage(message, sender){
         const chatBox = document.getElementById('chat-box')
+
         const messageDiv = document.createElement('div')
         messageDiv.className = `message ${sender}` 
         messageDiv.innerText =`${sender.toUpperCase()}: ${message}`
         chatBox.appendChild(messageDiv)
     }
 
-    async function fetchRespone() {
+    async function fetchRespone(message) {
+
+        const apiKey = ''
+        const url = 'https://api.openai.com/v1/chat/completions'
+
+
+        try{
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    max_tokens: 100,
+                    temperature: 0.5,
+                    messages: [
+                        {
+
+                            role: 'user',
+                            content: message
+
+                        }
+                        
+                    ]
+                })
+
+                
+            })
+
+            const data = await response.json()
+            const reply = data.choices[0].message.content
+            displayMessage(reply, 'bot')
+
+        }catch(error){
+            console.log('Error',error)
+        }
+
 
     }
-               
-
-
-
-
-
-
-
-
 
 })
